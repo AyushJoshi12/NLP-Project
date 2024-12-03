@@ -8,9 +8,20 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.preprocessing import StandardScaler
 
 # Ensure necessary NLTK data is downloaded for tokenization, stopwords, and lemmatization
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+try:
+    nltk.data.find('corpora/wordnet')
+except LookupError:
+    nltk.download('wordnet')
 
 # Load the saved models and necessary components
 lr_model = joblib.load('lr_model.pkl')  # Logistic Regression model
@@ -113,9 +124,9 @@ else:
 
 # Predict sentiment when the user clicks the "Predict Sentiment" button
 if st.button("Predict Sentiment"):
-    if user_input:
-        # Predict the sentiment using the selected model
-        sentiment = predict_sentiment(selected_model, label_encoder, user_input)
-        st.subheader(f"Predicted Sentiment: **{sentiment}**")
+    if user_input.strip():
+        with st.spinner("Processing..."):
+            sentiment = predict_sentiment(selected_model, label_encoder, user_input)
+            st.subheader(f"Predicted Sentiment: **{sentiment}**")
     else:
         st.warning("Please enter a review to predict the sentiment.")
