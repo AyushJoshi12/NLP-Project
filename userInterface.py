@@ -14,6 +14,11 @@ except LookupError:
     nltk.download('punkt')
 
 try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab')
+
+try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
     nltk.download('stopwords')
@@ -24,11 +29,14 @@ except LookupError:
     nltk.download('wordnet')
 
 # Load the saved models and necessary components
-lr_model = joblib.load('lr_model.pkl')  # Logistic Regression model
-svc_model = joblib.load('svm_model.pkl')  # Support Vector Machine model
-label_encoder = joblib.load('label_encoder.pkl')  # Load the saved LabelEncoder
-tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')  # Load the saved TF-IDF vectorizer
-scaler = joblib.load('scaler.pkl')  # Load the saved scaler
+try:
+    lr_model = joblib.load('lr_model.pkl')  # Logistic Regression model
+    svc_model = joblib.load('svm_model.pkl')  # Support Vector Machine model
+    label_encoder = joblib.load('label_encoder.pkl')  # Load the saved LabelEncoder
+    tfidf_vectorizer = joblib.load('tfidf_vectorizer.pkl')  # Load the saved TF-IDF vectorizer
+    scaler = joblib.load('scaler.pkl')  # Load the saved scaler
+except Exception as e:
+    st.error(f"Error loading models: {str(e)}")
 
 def clean_text(text):
     """
@@ -125,8 +133,8 @@ else:
 # Predict sentiment when the user clicks the "Predict Sentiment" button
 if st.button("Predict Sentiment"):
     if user_input.strip():
-        with st.spinner("Processing..."):
+        with st.spinner("Processing your review..."):
             sentiment = predict_sentiment(selected_model, label_encoder, user_input)
             st.subheader(f"Predicted Sentiment: **{sentiment}**")
     else:
-        st.warning("Please enter a review to predict the sentiment.")
+        st.warning("Please enter a review text to predict the sentiment.")
